@@ -1,17 +1,32 @@
-# 🌆 CYBER CITY 2099
+# 🌆 CYBER CITY 2099 - GTA Edition
 
-An in-browser, high-octane 3D cyberpunk open-world game built with **Three.js** and **WebGL**. Drive high-performance neon sports cars, wield an arsenal of 15 futuristic energy weapons, complete story missions against the OmniCorp Megacorporation, and liberate Cyber City.
+An in-browser, high-octane 3D open-world city game built with **Three.js** and **WebGL**, inspired by classic open-world games (GTA IV Liberty City & GTA V). Drive high-performance supercars, wield an arsenal of 15 futuristic energy weapons, complete story missions against the OmniCorp Megacorporation, and liberate Cyber City.
+
+---
+
+## 🌟 Graphics & Visual Overhaul (GTA IV Edition)
+
+- **Atmospheric Golden Hour Lighting**: Iconic Liberty City sunset sky dome with dusty crimson/amber haze, dynamic low-angle sun flare, and soft ambient city bounce.
+- **High-Fidelity Asphalt & Streets**: Detailed asphalt grain with yellow double centerlines, white lane dashes, road shoulder lines, and pedestrian zebra crosswalks.
+- **Raised 3D Sidewalks & Curbs**: Realistic concrete curbs and textured pedestrian paving slabs on every block.
+- **Architectural Variety**: Liberty City red-brick brownstone walk-ups with fire escapes, Algonquin Art Deco stepped spires, modern reflective glass high-rises, and rooftop wooden water towers.
+- **Supercar Visuals & Physics**:
+  - Sculpted aerodynamic bodywork with high-gloss metallic paint and clearcoat reflections.
+  - Dual projector headlights casting real spotlights onto the street ahead.
+  - Taillights with dynamic braking/reversing luminescence.
+  - GTA IV suspension pitch & roll (car squats on acceleration, dips when braking, rolls into hard corners).
+  - Realistic burnout and drift tire smoke particle emitters.
+- **Cinematic Post-Processing**: ACES Filmic tone mapping, PCF soft shadow maps, and screen-space vignetting.
 
 ---
 
 ## 🎮 Playable Features
 
-- **Drivable Cyber Sports Car**: Realistic arcade vehicle physics with acceleration, high-speed drifting, nitro boost (`Shift`), headlights, and neon underglow.
-- **On-Foot Operative**: 3rd-person & 1st-person camera modes, sprinting, jumping, dynamic cyber-shield regeneration, and fluid weapon aiming.
-- **Procedural Cyberpunk City**: 800m × 800m city grid with illuminated skyscrapers, holographic animated neon billboards, streetlights, and collision physics.
-- **GTA-Style Minimap**: Real-time 2D radar displaying roads, player heading, sports car location, mission objective waypoints, and hostile enemy blips.
-- **Wanted Level System**: 1 to 5 Cyber-Stars triggering relentless OmniCorp surveillance drones and police interceptors.
-- **Procedural Web Audio Engine**: Zero external audio files required! Synthesizes vehicle engine revving, tire screeches, 15 weapon firing SFX, explosions, and a 3-track retro Synthwave Radio station in real-time.
+- **Drivable Supercar**: Realistic arcade vehicle physics with acceleration, high-speed drifting (`Space`), nitro boost (`Shift`), headlights, and collision physics.
+- **On-Foot Operative**: 3rd-person & 1st-person camera modes (`V`), sprinting, jumping, dynamic body armor regeneration, and fluid weapon aiming.
+- **GTA-Style Minimap**: Real-time 2D radar displaying roads, player heading, supercar location, mission objective waypoints, and hostile enemy blips.
+- **Wanted Level System**: 1 to 5 Stars triggering OmniCorp surveillance drones, tactical ground squads, and police interceptor vehicles.
+- **Procedural Web Audio Engine**: Synthesizes vehicle engine revving, tire screeches, all 15 weapon firing SFX, explosions, and a 3-track retro Synthwave Radio station (`R` to cycle tracks, `M` to mute).
 
 ---
 
@@ -42,7 +57,7 @@ An in-browser, high-octane 3D cyberpunk open-world game built with **Three.js** 
 Take on the role of **Kaelen Voss**, an ex-operative betrayed by OmniCorp Director Vane:
 
 1. **Mission 1: The Awakening**  
-   Retrieve your hidden cyber weapon cache from the back alley, neutralize 3 scout drones, and commandeer your cyber sports car.
+   Retrieve your hidden cyber weapon cache from the back alley, neutralize 3 scout drones, and commandeer your supercar.
 2. **Mission 2: Neon Courier**  
    Race through 5 transmission relay checkpoints across the city before the 85-second encryption countdown expires while evading police cruisers.
 3. **Mission 3: The Data Purge**  
@@ -76,25 +91,17 @@ Take on the role of **Kaelen Voss**, an ex-operative betrayed by OmniCorp Direct
 
 ## 🚀 How to Run Locally
 
-Because all 3D geometry, neon textures, and audio synthesis are generated procedurally in pure JavaScript, **no build step, Node.js, or server installation is required**:
-
-1. Open `index.html` directly in any modern browser (Chrome, Edge, Firefox, Brave).
-2. Alternatively, serve via any local web server:
-   ```bash
-   npx serve .
-   # or
-   python -m http.server 8000
-   ```
-3. Click anywhere on the screen to lock the mouse pointer and activate the audio synthesizer!
+Open `index.html` directly in any modern browser (Chrome, Edge, Firefox, Brave):
+```powershell
+Start-Process "C:\Users\W11\cyber-city\index.html"
+```
 
 ---
 
-## 🌐 Deploy to GitHub Pages
+## 🌐 Live Web Game
 
-1. Push this repository to GitHub.
-2. Go to your repository **Settings** → **Pages**.
-3. Under **Branch**, select `main` (or `master`) and `/root`, then click **Save**.
-4. Your 3D Cyber City game is live worldwide!
+Play online on GitHub Pages:
+**[https://ravinderpalsgh17-gif.github.io/cyber-city/](https://ravinderpalsgh17-gif.github.io/cyber-city/)**
 
 ---
 

@@ -1,6 +1,6 @@
-/* Cyber City - Futuristic Cyberpunk Neon Styling */
+/* Cyber City - GTA IV Liberty City Edition Styling */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap');
 
 * {
     margin: 0;
@@ -13,7 +13,7 @@ body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #030509;
+    background-color: #101626;
     font-family: 'Rajdhani', sans-serif;
     color: #ffffff;
 }
@@ -27,20 +27,19 @@ body, html {
     z-index: 1;
 }
 
-/* CRT Scanline Overlay */
-#scanline-overlay {
+/* Cinematic Edge Vignette & Warm Color Grade */
+#cinematic-vignette {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 10;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 3px, 6px 100%;
+    z-index: 8;
+    background: radial-gradient(circle at center, transparent 55%, rgba(12, 10, 16, 0.65) 100%);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
 }
 
-/* Hurt flash overlay */
 #hurt-overlay {
     position: absolute;
     top: 0;
@@ -48,13 +47,104 @@ body, html {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 11;
-    background: radial-gradient(circle, transparent 60%, rgba(255, 0, 60, 0.8) 100%);
+    z-index: 9;
+    background: radial-gradient(circle, transparent 50%, rgba(220, 20, 60, 0.85) 100%);
     opacity: 0;
     transition: opacity 0.1s ease;
 }
 
-/* HUD Layer */
+#error-banner {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d32f2f;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 9999;
+}
+
+/* Splash / Start Screen (GTA IV Style) */
+#start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    background: radial-gradient(circle at center, rgba(30, 22, 38, 0.9) 0%, rgba(10, 12, 20, 0.98) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.splash-card {
+    background: rgba(18, 22, 36, 0.92);
+    border: 2px solid #f5b041;
+    box-shadow: 0 0 40px rgba(245, 176, 65, 0.35);
+    padding: 40px;
+    max-width: 640px;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.splash-subtitle {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #f5b041;
+    margin-bottom: 8px;
+}
+
+.splash-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 54px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #ffffff;
+    text-shadow: 0 0 25px rgba(245, 176, 65, 0.7);
+    margin-bottom: 16px;
+}
+
+.splash-desc {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #d1d5db;
+    margin-bottom: 24px;
+}
+
+.splash-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #f5b041;
+    margin-bottom: 30px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+.big-btn {
+    font-size: 20px !important;
+    padding: 16px 48px !important;
+    background: #f5b041 !important;
+    color: #111625 !important;
+    border-color: #f5b041 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 25px rgba(245, 176, 65, 0.6) !important;
+}
+.big-btn:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: 0 0 40px #ffffff !important;
+}
+
+/* In-Game HUD */
 #hud {
     position: absolute;
     top: 0;
@@ -79,37 +169,36 @@ body, html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     pointer-events: none;
 }
 #crosshair::before, #crosshair::after {
     content: '';
     position: absolute;
     background: #00f0ff;
-    box-shadow: 0 0 8px #00f0ff;
+    box-shadow: 0 0 6px #00f0ff;
 }
 #crosshair::before {
-    top: 13px;
+    top: 12px;
     left: 0;
-    width: 28px;
+    width: 26px;
     height: 2px;
 }
 #crosshair::after {
     top: 0;
-    left: 13px;
+    left: 12px;
     width: 2px;
-    height: 28px;
+    height: 26px;
 }
 #crosshair-dot {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 11px;
+    left: 11px;
     width: 4px;
     height: 4px;
     background: #ff0055;
     border-radius: 50%;
-    box-shadow: 0 0 6px #ff0055;
 }
 
 /* Top Bar: Mission & Wanted / Radio */
@@ -121,19 +210,22 @@ body, html {
 }
 
 #mission-panel {
-    background: rgba(8, 12, 24, 0.85);
-    border: 1px solid #00f0ff;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-    padding: 12px 18px;
+    background: rgba(16, 20, 32, 0.88);
+    border-left: 4px solid #f5b041;
+    border-top: 1px solid rgba(245, 176, 65, 0.3);
+    border-right: 1px solid rgba(245, 176, 65, 0.3);
+    border-bottom: 1px solid rgba(245, 176, 65, 0.3);
+    padding: 12px 20px;
     border-radius: 4px;
-    max-width: 440px;
-    backdrop-filter: blur(4px);
+    max-width: 460px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
 }
 
 #mission-badge {
     font-family: 'Orbitron', monospace;
     font-size: 11px;
-    color: #00f0ff;
+    color: #f5b041;
     letter-spacing: 2px;
     margin-bottom: 4px;
 }
@@ -143,21 +235,19 @@ body, html {
     font-size: 18px;
     font-weight: 700;
     color: #ffffff;
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 #mission-objective {
     font-size: 15px;
     color: #ffea00;
-    letter-spacing: 0.5px;
 }
 
 #mission-timer {
     margin-top: 6px;
     font-family: 'Orbitron', monospace;
     font-size: 14px;
-    color: #ff0055;
+    color: #ff3344;
     font-weight: bold;
 }
 
@@ -169,21 +259,26 @@ body, html {
 }
 
 #wanted-stars {
-    font-size: 28px;
-    letter-spacing: 4px;
-    color: #ffea00;
-    text-shadow: 0 0 12px #ff0055;
+    font-size: 32px;
+    letter-spacing: 5px;
+    color: #ffcc00;
+    text-shadow: 0 0 14px rgba(255, 68, 68, 0.8);
 }
 
 #radio-panel {
-    background: rgba(8, 12, 24, 0.85);
-    border: 1px solid #ff0055;
-    box-shadow: 0 0 12px rgba(255, 0, 85, 0.3);
+    background: rgba(16, 20, 32, 0.88);
+    border: 1px solid #f5b041;
     padding: 6px 14px;
     border-radius: 4px;
     font-family: 'Orbitron', monospace;
     font-size: 12px;
-    color: #ff0055;
+    color: #f5b041;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+#radio-panel .subtext {
+    opacity: 0.65;
+    font-size: 10px;
+    margin-left: 6px;
 }
 
 /* Boss Health HUD */
@@ -192,34 +287,33 @@ body, html {
     top: 24px;
     left: 50%;
     transform: translateX(-50%);
-    width: 460px;
-    background: rgba(10, 14, 28, 0.9);
-    border: 2px solid #ff0055;
-    box-shadow: 0 0 20px #ff0055;
-    padding: 10px 16px;
+    width: 480px;
+    background: rgba(16, 20, 32, 0.92);
+    border: 2px solid #ff3344;
+    box-shadow: 0 0 25px rgba(255, 51, 68, 0.4);
+    padding: 10px 18px;
     border-radius: 4px;
     text-align: center;
 }
 #boss-name {
     font-family: 'Orbitron', monospace;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
-    color: #ff0055;
-    letter-spacing: 3px;
+    color: #ff3344;
+    letter-spacing: 2px;
     margin-bottom: 6px;
 }
 #boss-health-bar {
     width: 100%;
-    height: 12px;
-    background: #181d2f;
+    height: 14px;
+    background: #181d28;
     border-radius: 2px;
     overflow: hidden;
 }
 #boss-health-fill {
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, #ff0055, #ffea00);
-    box-shadow: 0 0 10px #ff0055;
+    background: linear-gradient(90deg, #ff3344, #f5b041);
     transition: width 0.15s ease;
 }
 #boss-health-text {
@@ -229,21 +323,18 @@ body, html {
     margin-top: 4px;
 }
 
-/* Dialogue Box */
+/* Radio Dialogue Box */
 #dialogue-box {
     position: absolute;
-    top: 105px;
+    top: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(6, 10, 20, 0.92);
+    background: rgba(14, 18, 30, 0.94);
     border-left: 4px solid #00f0ff;
-    border-right: 1px solid rgba(0, 240, 255, 0.4);
-    border-top: 1px solid rgba(0, 240, 255, 0.4);
-    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
     padding: 14px 22px;
     width: 620px;
     max-width: 90%;
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
     border-radius: 2px;
     backdrop-filter: blur(6px);
 }
@@ -258,30 +349,30 @@ body, html {
 #dialogue-text {
     font-size: 16px;
     line-height: 1.4;
-    color: #e0f8ff;
+    color: #f0f4f8;
 }
 
-/* Center Bottom: Interaction Prompt */
+/* Interaction Prompt */
 #interaction-prompt {
     align-self: center;
-    background: rgba(0, 0, 0, 0.75);
-    border: 1px solid #ffea00;
-    color: #ffea00;
+    background: rgba(16, 20, 32, 0.9);
+    border: 1px solid #f5b041;
+    color: #f5b041;
     font-family: 'Orbitron', monospace;
     font-size: 14px;
     letter-spacing: 1px;
-    padding: 8px 18px;
+    padding: 10px 22px;
     border-radius: 4px;
-    box-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
+    box-shadow: 0 0 20px rgba(245, 176, 65, 0.4);
     margin-bottom: 12px;
 }
 
-/* Speedometer HUD (Vehicle Mode) */
+/* Speedometer HUD */
 #speedo-hud {
     align-self: center;
-    background: rgba(10, 15, 28, 0.9);
+    background: rgba(16, 20, 32, 0.9);
     border: 1px solid #00f0ff;
-    padding: 10px 24px;
+    padding: 10px 26px;
     border-radius: 4px;
     text-align: center;
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
@@ -289,19 +380,19 @@ body, html {
 }
 #speed-display {
     font-family: 'Orbitron', monospace;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 900;
     color: #00f0ff;
 }
 #speed-unit {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 2px;
     color: #888;
 }
 #nitro-bar-container {
-    width: 140px;
-    height: 6px;
-    background: #18223c;
+    width: 150px;
+    height: 7px;
+    background: #182236;
     border-radius: 2px;
     margin-top: 6px;
     overflow: hidden;
@@ -312,8 +403,15 @@ body, html {
     background: #00f0ff;
     box-shadow: 0 0 8px #00f0ff;
 }
+.nitro-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: #8899aa;
+    margin-top: 4px;
+    letter-spacing: 1px;
+}
 
-/* Bottom Bar: Minimap & Weapons */
+/* Bottom Bar */
 .hud-bottom {
     display: flex;
     justify-content: space-between;
@@ -321,7 +419,6 @@ body, html {
     width: 100%;
 }
 
-/* Minimap + Status Bars */
 #minimap-wrapper {
     display: flex;
     flex-direction: column;
@@ -331,7 +428,7 @@ body, html {
 
 #minimap-canvas {
     border-radius: 50%;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
 }
 
 #status-bars {
@@ -342,9 +439,9 @@ body, html {
 }
 .stat-bar {
     width: 100%;
-    height: 14px;
-    background: rgba(12, 18, 32, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 15px;
+    background: rgba(16, 20, 32, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 2px;
     position: relative;
     overflow: hidden;
@@ -355,12 +452,12 @@ body, html {
     transition: width 0.15s ease;
 }
 #health-bar-fill {
-    background: linear-gradient(90deg, #ff0055, #ff3377);
-    box-shadow: 0 0 8px #ff0055;
+    background: linear-gradient(90deg, #d32f2f, #ff5252);
+    box-shadow: 0 0 6px #d32f2f;
 }
 #shield-bar-fill {
-    background: linear-gradient(90deg, #00f0ff, #0099ff);
-    box-shadow: 0 0 8px #00f0ff;
+    background: linear-gradient(90deg, #1976d2, #42a5f5);
+    box-shadow: 0 0 6px #1976d2;
 }
 .stat-text {
     position: absolute;
@@ -371,22 +468,22 @@ body, html {
     font-size: 9px;
     font-weight: 700;
     color: #ffffff;
-    text-shadow: 0 0 4px #000000;
+    text-shadow: 0 0 3px #000000;
 }
 
-/* Right Weapon Card & 15-Weapon Selector Strip */
+/* Weapon Card & Strip */
 #weapon-wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
-    max-width: 540px;
+    max-width: 520px;
 }
 
 #weapon-card {
-    background: rgba(8, 12, 24, 0.88);
-    border: 1px solid #00f0ff;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    background: rgba(16, 20, 32, 0.9);
+    border: 1px solid #f5b041;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     padding: 12px 18px;
     border-radius: 4px;
     width: 320px;
@@ -402,30 +499,27 @@ body, html {
 #weapon-counter {
     font-family: 'Orbitron', monospace;
     font-size: 11px;
-    color: #00f0ff;
+    color: #f5b041;
 }
 #weapon-name {
     font-family: 'Orbitron', monospace;
     font-size: 18px;
     font-weight: 700;
     color: #ffffff;
-    text-shadow: 0 0 8px #00f0ff;
 }
 #weapon-ammo {
     font-family: 'Orbitron', monospace;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 900;
     color: #ffea00;
-    letter-spacing: 1px;
     margin: 4px 0;
 }
 #weapon-desc {
     font-size: 12px;
-    color: #99aacc;
+    color: #a0aec0;
     line-height: 1.3;
 }
 
-/* 15-Weapon Mini Grid */
 #weapon-strip {
     display: flex;
     flex-wrap: wrap;
@@ -436,8 +530,8 @@ body, html {
 .weapon-slot {
     width: 28px;
     height: 28px;
-    background: rgba(14, 20, 36, 0.9);
-    border: 1px solid rgba(0, 240, 255, 0.3);
+    background: rgba(16, 20, 32, 0.9);
+    border: 1px solid rgba(245, 176, 65, 0.3);
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -449,34 +543,33 @@ body, html {
     transition: all 0.15s ease;
 }
 .weapon-slot:hover {
-    border-color: #00f0ff;
-    color: #00f0ff;
-    background: rgba(0, 240, 255, 0.15);
+    border-color: #f5b041;
+    color: #f5b041;
+    background: rgba(245, 176, 65, 0.15);
 }
 .weapon-slot.active {
-    border-color: #ff0055;
-    background: #ff0055;
-    color: #ffffff;
-    box-shadow: 0 0 10px #ff0055;
+    border-color: #f5b041;
+    background: #f5b041;
+    color: #0b0f19;
+    box-shadow: 0 0 10px #f5b041;
     font-weight: bold;
 }
 
-/* Controls Hint Modal / Corner Helper */
 #controls-hint {
     position: absolute;
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 6px 14px;
+    background: rgba(14, 18, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 16px;
     border-radius: 4px;
     font-size: 11px;
-    color: #88aacc;
+    color: #cbd5e1;
     letter-spacing: 1px;
 }
 
-/* Overlays (Death & Victory) */
+/* Modals */
 .modal-screen {
     position: absolute;
     top: 0;
@@ -484,7 +577,7 @@ body, html {
     width: 100%;
     height: 100%;
     z-index: 100;
-    background: rgba(2, 4, 10, 0.88);
+    background: rgba(8, 12, 20, 0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -493,24 +586,24 @@ body, html {
 }
 .modal-title {
     font-family: 'Orbitron', monospace;
-    font-size: 48px;
+    font-size: 54px;
     font-weight: 900;
     letter-spacing: 4px;
     margin-bottom: 12px;
 }
 .modal-title.red {
-    color: #ff0055;
-    text-shadow: 0 0 25px #ff0055;
+    color: #d32f2f;
+    text-shadow: 0 0 30px #d32f2f;
 }
 .modal-title.cyan {
     color: #00f0ff;
-    text-shadow: 0 0 25px #00f0ff;
+    text-shadow: 0 0 30px #00f0ff;
 }
 .modal-desc {
     font-size: 18px;
-    color: #cccccc;
+    color: #cbd5e1;
     margin-bottom: 24px;
-    max-width: 500px;
+    max-width: 520px;
     text-align: center;
     line-height: 1.5;
 }
@@ -518,7 +611,7 @@ body, html {
     font-family: 'Orbitron', monospace;
     font-size: 16px;
     font-weight: 700;
-    padding: 12px 28px;
+    padding: 12px 30px;
     background: transparent;
     border: 2px solid #00f0ff;
     color: #00f0ff;

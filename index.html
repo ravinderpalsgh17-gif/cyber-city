@@ -3,39 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER CITY 2099 - 3D Open World</title>
+    <title>CYBER CITY 2099 - GTA Edition</title>
     <link rel="stylesheet" href="style.css">
     <!-- Three.js Release 128 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <!-- 3D Canvas Container -->
+    <!-- 3D Canvas Viewport -->
     <div id="game-container"></div>
 
-    <!-- Scanline & Hurt Visual FX -->
-    <div id="scanline-overlay"></div>
+    <!-- Cinematic Vignette & Grain FX -->
+    <div id="cinematic-vignette"></div>
     <div id="hurt-overlay"></div>
 
-    <!-- HUD Interface -->
+    <!-- Error Fallback Banner (Hidden unless JS fails) -->
+    <div id="error-banner" class="hidden"></div>
+
+    <!-- GTA Style Start Screen / Splash -->
+    <div id="start-screen" class="modal-screen">
+        <div class="splash-card">
+            <div class="splash-subtitle">OMNICORP LIBERTY DISTRICT // 2099</div>
+            <h1 class="splash-title">CYBER CITY</h1>
+            <p class="splash-desc">
+                High-octane 3D open-world city inspired by classic open-world games.
+                Drive high-performance supercars with arcade physics, wield 15 distinct weapons,
+                take on corporate drone squads, and complete the 5-part campaign to liberate the city.
+            </p>
+            <div class="splash-controls">
+                <span>[WASD] Move &amp; Drive</span> • 
+                <span>[MOUSE] Aim &amp; Shoot</span> • 
+                <span>[E] / [F] Enter/Exit Car</span> • 
+                <span>[SHIFT] Nitro / Sprint</span> • 
+                <span>[SPACE] Drift / Jump</span> • 
+                <span>[1-9, 0, -, =] 15 Weapons</span>
+            </div>
+            <button id="start-btn" class="cyber-btn big-btn">START GAME</button>
+        </div>
+    </div>
+
+    <!-- In-Game HUD Interface -->
     <div id="hud">
-        <!-- Center Crosshair -->
+        <!-- Dynamic Crosshair -->
         <div id="crosshair">
             <div id="crosshair-dot"></div>
         </div>
 
-        <!-- Boss Health Bar -->
+        <!-- Apex Titan Boss Health Bar -->
         <div id="boss-hud" class="hidden">
-            <div id="boss-name">APEX TITAN-MECH</div>
+            <div id="boss-name">APEX TITAN-MECH // CITADEL DEFENDER</div>
             <div id="boss-health-bar">
                 <div id="boss-health-fill"></div>
             </div>
             <div id="boss-health-text">2500 / 2500 HP</div>
         </div>
 
-        <!-- Top Status Bar -->
+        <!-- Top Bar: Mission Objective & Wanted Stars -->
         <div class="hud-top">
             <div id="mission-panel">
-                <div id="mission-badge">ACTIVE CAMPAIGN</div>
+                <div id="mission-badge">CAMPAIGN OBJECTIVE</div>
                 <div id="mission-title">1. The Awakening</div>
                 <div id="mission-objective">▶ Go to your weapon cache in the alleyway</div>
                 <div id="mission-timer" class="hidden">TIME: 85s</div>
@@ -45,51 +70,52 @@
                 <div id="wanted-stars">☆☆☆☆☆</div>
                 <div id="radio-panel">
                     <span id="radio-status">RADIO: NEON SKYLINE</span>
-                    <span style="opacity: 0.6; font-size: 10px; margin-left: 6px;">[R: Next | M: Mute]</span>
+                    <span class="subtext">[R: Next | M: Mute]</span>
                 </div>
             </div>
         </div>
 
-        <!-- Story Dialogue Comms Box -->
+        <!-- Story Radio Dialogue Box -->
         <div id="dialogue-box" class="hidden">
             <div id="dialogue-speaker">NYX // RESISTANCE HANDLER</div>
             <div id="dialogue-text">Kaelen, wake up! OmniCorp thinks you're dead at the bottom of Sector 4. Grab your gear from the stash before their sweepers lock this block down!</div>
         </div>
 
-        <!-- Vehicle Interaction Prompt -->
-        <div id="interaction-prompt" class="hidden">[E] ENTER CYBER CAR</div>
+        <!-- Interaction Prompt (e.g. Enter Car) -->
+        <div id="interaction-prompt" class="hidden">[E] ENTER SUPERCAR</div>
 
-        <!-- Speedometer & Nitro Bar (Vehicle Mode) -->
+        <!-- Vehicle Speedometer HUD -->
         <div id="speedo-hud" class="hidden">
             <div id="speed-display"><span id="speed-value">0</span> <span id="speed-unit">KM/H</span></div>
             <div id="nitro-bar-container">
                 <div id="nitro-bar-fill"></div>
             </div>
+            <div class="nitro-label">NITRO BOOST [SHIFT]</div>
         </div>
 
-        <!-- Bottom Bar: Minimap & Weapons -->
+        <!-- Bottom Bar: Minimap Radar & Weapon Arsenal -->
         <div class="hud-bottom">
-            <!-- Minimap + Player Status -->
+            <!-- GTA-Style Minimap Radar & Health/Armor -->
             <div id="minimap-wrapper">
-                <canvas id="minimap-canvas" width="180" height="180"></canvas>
+                <canvas id="minimap-canvas" width="190" height="190"></canvas>
                 <div id="status-bars">
-                    <div class="stat-bar">
+                    <div class="stat-bar armor-bar">
                         <div id="shield-bar-fill" class="stat-fill"></div>
-                        <span id="shield-text" class="stat-text">100 SHIELD</span>
+                        <span id="shield-text" class="stat-text">100 ARMOR</span>
                     </div>
-                    <div class="stat-bar">
+                    <div class="stat-bar health-bar">
                         <div id="health-bar-fill" class="stat-fill"></div>
                         <span id="health-text" class="stat-text">100 HP</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Controls Quick Hint -->
+            <!-- Controls Banner -->
             <div id="controls-hint">
-                [WASD] Move/Drive | [MOUSE] Aim/Shoot | [E/F] Car | [1-9, 0, -, =] 15 Weapons | [SHIFT] Sprint/Nitro | [SPACE] Jump/Drift
+                [WASD] Drive/Walk | [MOUSE] Aim/Fire | [E] Car | [SHIFT] Nitro/Sprint | [SPACE] Drift/Jump | [1-9,0,-,=] 15 Weapons
             </div>
 
-            <!-- Weapon Arsenal Status & 15-Slot Selector -->
+            <!-- Weapon Arsenal HUD & Quick Selector -->
             <div id="weapon-wrapper">
                 <div id="weapon-card">
                     <div id="weapon-header">
@@ -97,10 +123,10 @@
                         <div id="weapon-name">1. Neon Striker</div>
                     </div>
                     <div id="weapon-ammo">AMMO: ∞</div>
-                    <div id="weapon-desc">Standard-issue high-precision cyber energy sidearm</div>
+                    <div id="weapon-desc">High-precision semi-auto cyber sidearm with match-grade ion chamber</div>
                 </div>
 
-                <!-- 15 Weapon Selection Slots -->
+                <!-- 15 Weapon Selection Strip -->
                 <div id="weapon-strip" class="hud-interactive">
                     <div class="weapon-slot active" title="1. Neon Striker">1</div>
                     <div class="weapon-slot" title="2. Pulse-9 SMG">2</div>
@@ -122,21 +148,21 @@
         </div>
     </div>
 
-    <!-- Death Modal Screen -->
+    <!-- Death Modal -->
     <div id="death-screen" class="modal-screen hidden">
-        <h1 class="modal-title red">FLATLINED</h1>
-        <p class="modal-desc">Your cybernetic vital signs collapsed. Sector 4 patrol retrieved your consciousness.</p>
-        <button id="respawn-btn" class="cyber-btn hud-interactive">RESPAWN AT SECTOR 4</button>
+        <h1 class="modal-title red">WASTED</h1>
+        <p class="modal-desc">You flatlined on the streets of Liberty District. Neural backup retrieved at Safehouse.</p>
+        <button id="respawn-btn" class="cyber-btn hud-interactive">RESPAWN</button>
     </div>
 
-    <!-- Victory Modal Screen -->
+    <!-- Victory Modal -->
     <div id="victory-screen" class="modal-screen hidden">
-        <h1 class="modal-title cyan">CYBER OVERRIDE COMPLETE</h1>
-        <p class="modal-desc">The OmniCorp Central Spire has fallen. The Titan-Mech was dismantled, and the liberation code is broadcast across all sectors. You now control Cyber City.</p>
+        <h1 class="modal-title cyan">LIBERTY CITY LIBERATED</h1>
+        <p class="modal-desc">The OmniCorp Spire has been breached, the Titan-Mech neutralized, and the city broadcast override is complete. Cyber City is yours.</p>
         <button onclick="document.getElementById('victory-screen').classList.add('hidden')" class="cyber-btn hud-interactive">CONTINUE FREE ROAM</button>
     </div>
 
-    <!-- Game Logic Scripts -->
+    <!-- Game Engine Scripts -->
     <script src="js/audio.js"></script>
     <script src="js/city.js"></script>
     <script src="js/vehicle.js"></script>

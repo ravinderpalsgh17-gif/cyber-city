@@ -1,350 +1,491 @@
-// Cyber City - Procedural Cyberpunk City Generator
-// Generates skyscrapers, neon billboards, road grids, wet street shaders, and collision colliders.
+// Cyber City - High-Fidelity GTA 4 Style City Generator
+// Procedural Algonquin & Broker architecture, raised sidewalks, asphalt with crosswalks, rooftop water towers, and golden hour sky.
 
 class CityManager {
     constructor(scene) {
         this.scene = scene;
-        this.citySize = 800; // 800x800m world
-        this.blockSize = 70;
-        this.roadWidth = 24;
-        this.buildings = [];
+        this.citySize = 850;
+        this.blockSize = 72;
+        this.roadWidth = 26;
+        this.sidewalkWidth = 3.5;
+
         this.colliders = [];
-        this.billboards = [];
-        this.neonSigns = [];
         this.spawns = {
             player: new THREE.Vector3(0, 1.2, 0),
-            vehicle: new THREE.Vector3(12, 0.8, 10),
-            cache: new THREE.Vector3(-35, 1.0, -35),
-            omnicorpTower: new THREE.Vector3(0, 0, -200),
+            vehicle: new THREE.Vector3(10, 0.8, 12),
+            cache: new THREE.Vector3(-38, 1.0, -38),
+            omnicorpTower: new THREE.Vector3(0, 0, -220),
             checkpoints: [
-                new THREE.Vector3(120, 1, 0),
-                new THREE.Vector3(120, 1, 200),
-                new THREE.Vector3(-140, 1, 220),
-                new THREE.Vector3(-180, 1, -80),
-                new THREE.Vector3(0, 1, -160)
+                new THREE.Vector3(125, 1, 0),
+                new THREE.Vector3(125, 1, 210),
+                new THREE.Vector3(-145, 1, 230),
+                new THREE.Vector3(-190, 1, -90),
+                new THREE.Vector3(0, 1, -170)
             ]
         };
 
         this.generateTextures();
-        this.buildGroundAndRoads();
+        this.buildSkyDome();
+        this.buildGroundAndStreets();
         this.buildSkyscrapers();
+        this.buildStreetFurniture();
         this.buildPerimeterBarriers();
-        this.buildStreetLights();
     }
 
     generateTextures() {
-        // Procedural window texture for skyscrapers
-        const winCanvas = document.createElement('canvas');
-        winCanvas.width = 256;
-        winCanvas.height = 512;
-        const ctx = winCanvas.getContext('2d');
-        ctx.fillStyle = '#060814';
-        ctx.fillRect(0, 0, 256, 512);
+        // 1. GTA 4 Golden Hour Atmospheric Sky Gradient
+        const skyCanvas = document.createElement('canvas');
+        skyCanvas.width = 512;
+        skyCanvas.height = 512;
+        const sctx = skyCanvas.getContext('2d');
+        const skyGrad = sctx.createLinearGradient(0, 0, 0, 512);
+        skyGrad.addColorStop(0.0, '#101626'); // Deep zenith dusk
+        skyGrad.addColorStop(0.35, '#2d2538'); // Dusty twilight purple
+        skyGrad.addColorStop(0.70, '#66393b'); // Warm sunset crimson
+        skyGrad.addColorStop(0.92, '#c4622b'); // Golden amber horizon haze
+        skyGrad.addColorStop(1.0, '#f2994a'); // Sun glare glow
+        sctx.fillStyle = skyGrad;
+        sctx.fillRect(0, 0, 512, 512);
+        this.skyTexture = new THREE.CanvasTexture(skyCanvas);
 
-        const neonColors = ['#00f0ff', '#ff0055', '#ffea00', '#7928ca', '#ffffff', '#00ff66'];
-
-        for (let y = 10; y < 500; y += 14) {
-            for (let x = 8; x < 248; x += 16) {
-                if (Math.random() > 0.45) {
-                    ctx.fillStyle = neonColors[Math.floor(Math.random() * neonColors.length)];
-                    ctx.globalAlpha = 0.5 + Math.random() * 0.5;
-                    ctx.fillRect(x, y, 10, 8);
-                } else {
-                    ctx.fillStyle = '#0d1326';
-                    ctx.globalAlpha = 0.9;
-                    ctx.fillRect(x, y, 10, 8);
-                }
-            }
-        }
-        ctx.globalAlpha = 1.0;
-        this.windowTexture = new THREE.CanvasTexture(winCanvas);
-        this.windowTexture.wrapS = THREE.RepeatWrapping;
-        this.windowTexture.wrapT = THREE.RepeatWrapping;
-
-        // Road texture with glowing neon markings
+        // 2. Realistic GTA 4 Asphalt with Yellow Centerlines & Zebra Crosswalks
         const roadCanvas = document.createElement('canvas');
-        roadCanvas.width = 512;
-        roadCanvas.height = 512;
+        roadCanvas.width = 1024;
+        roadCanvas.height = 1024;
         const rctx = roadCanvas.getContext('2d');
-        rctx.fillStyle = '#0a0d16';
-        rctx.fillRect(0, 0, 512, 512);
 
-        // Asphalt grain
-        rctx.fillStyle = 'rgba(25, 30, 45, 0.4)';
-        for (let i = 0; i < 3000; i++) {
-            rctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+        // Dark grey asphalt grain
+        rctx.fillStyle = '#1e2229';
+        rctx.fillRect(0, 0, 1024, 1024);
+
+        // Asphalt texture speckles
+        for (let i = 0; i < 9000; i++) {
+            const val = 25 + Math.floor(Math.random() * 25);
+            rctx.fillStyle = `rgb(${val},${val + 2},${val + 5})`;
+            rctx.fillRect(Math.random() * 1024, Math.random() * 1024, 2, 2);
         }
 
-        // Glowing center dash
-        rctx.strokeStyle = '#00f0ff';
-        rctx.lineWidth = 6;
-        rctx.shadowColor = '#00f0ff';
-        rctx.shadowBlur = 12;
-        rctx.setLineDash([28, 20]);
+        // Double solid yellow centerlines
+        rctx.strokeStyle = '#f5b041';
+        rctx.lineWidth = 8;
         rctx.beginPath();
-        rctx.moveTo(256, 0);
-        rctx.lineTo(256, 512);
+        rctx.moveTo(506, 0); rctx.lineTo(506, 1024);
+        rctx.moveTo(518, 0); rctx.lineTo(518, 1024);
         rctx.stroke();
 
-        // Edge curbs
-        rctx.strokeStyle = '#ff0055';
-        rctx.lineWidth = 4;
-        rctx.shadowColor = '#ff0055';
-        rctx.shadowBlur = 10;
-        rctx.setLineDash([]);
+        // White dashed lane dividers
+        rctx.strokeStyle = '#e0e0e0';
+        rctx.lineWidth = 6;
+        rctx.setLineDash([36, 32]);
         rctx.beginPath();
-        rctx.moveTo(16, 0);
-        rctx.lineTo(16, 512);
-        rctx.moveTo(496, 0);
-        rctx.lineTo(496, 512);
+        rctx.moveTo(256, 0); rctx.lineTo(256, 1024);
+        rctx.moveTo(768, 0); rctx.lineTo(768, 1024);
         rctx.stroke();
+        rctx.setLineDash([]);
+
+        // White edge solid shoulder lines
+        rctx.lineWidth = 5;
+        rctx.beginPath();
+        rctx.moveTo(32, 0); rctx.lineTo(32, 1024);
+        rctx.moveTo(992, 0); rctx.lineTo(992, 1024);
+        rctx.stroke();
+
+        // Zebra crosswalk pedestrian lines at top and bottom
+        rctx.fillStyle = '#f0f0f0';
+        for (let x = 60; x < 964; x += 44) {
+            rctx.fillRect(x, 15, 24, 90);
+            rctx.fillRect(x, 919, 24, 90);
+        }
 
         this.roadTexture = new THREE.CanvasTexture(roadCanvas);
         this.roadTexture.wrapS = THREE.RepeatWrapping;
         this.roadTexture.wrapT = THREE.RepeatWrapping;
-        this.roadTexture.repeat.set(1, 10);
+        this.roadTexture.repeat.set(1, 8);
+
+        // 3. Concrete Sidewalk Slab Texture
+        const walkCanvas = document.createElement('canvas');
+        walkCanvas.width = 256;
+        walkCanvas.height = 256;
+        const wctx = walkCanvas.getContext('2d');
+        wctx.fillStyle = '#8f949e';
+        wctx.fillRect(0, 0, 256, 256);
+        // Concrete slab joints
+        wctx.strokeStyle = '#5b616b';
+        wctx.lineWidth = 3;
+        wctx.strokeRect(4, 4, 248, 248);
+        wctx.strokeRect(4, 128, 248, 1);
+        wctx.strokeRect(128, 4, 1, 248);
+        this.sidewalkTexture = new THREE.CanvasTexture(walkCanvas);
+        this.sidewalkTexture.wrapS = THREE.RepeatWrapping;
+        this.sidewalkTexture.wrapT = THREE.RepeatWrapping;
+        this.sidewalkTexture.repeat.set(2, 2);
+
+        // 4. Brick & Brownstone Window Texture (Liberty City style)
+        const brickCanvas = document.createElement('canvas');
+        brickCanvas.width = 512;
+        brickCanvas.height = 512;
+        const bctx = brickCanvas.getContext('2d');
+        bctx.fillStyle = '#3a2723';
+        bctx.fillRect(0, 0, 512, 512);
+
+        // Weathered brick mortar lines
+        bctx.fillStyle = '#4e342e';
+        for (let y = 0; y < 512; y += 12) {
+            bctx.fillRect(0, y, 512, 2);
+        }
+
+        // Multi-pane windows with glowing warm interiors
+        for (let y = 16; y < 500; y += 42) {
+            for (let x = 18; x < 500; x += 38) {
+                const lit = Math.random() > 0.45;
+                bctx.fillStyle = lit ? (Math.random() > 0.3 ? '#ffecb3' : '#80d8ff') : '#1a1412';
+                bctx.fillRect(x, y, 22, 28);
+
+                // Window frame
+                bctx.strokeStyle = '#231b18';
+                bctx.lineWidth = 2;
+                bctx.strokeRect(x, y, 22, 28);
+                bctx.beginPath();
+                bctx.moveTo(x + 11, y); bctx.lineTo(x + 11, y + 28);
+                bctx.moveTo(x, y + 14); bctx.lineTo(x + 22, y + 14);
+                bctx.stroke();
+            }
+        }
+        this.brickTexture = new THREE.CanvasTexture(brickCanvas);
+        this.brickTexture.wrapS = THREE.RepeatWrapping;
+        this.brickTexture.wrapT = THREE.RepeatWrapping;
+
+        // 5. Modern High-Rise Glass Facade
+        const glassCanvas = document.createElement('canvas');
+        glassCanvas.width = 256;
+        glassCanvas.height = 512;
+        const gctx = glassCanvas.getContext('2d');
+        gctx.fillStyle = '#152136';
+        gctx.fillRect(0, 0, 256, 512);
+
+        for (let y = 10; y < 510; y += 18) {
+            for (let x = 8; x < 250; x += 18) {
+                const lit = Math.random() > 0.35;
+                gctx.fillStyle = lit ? (Math.random() > 0.2 ? '#ffe082' : '#00e5ff') : '#0c1322';
+                gctx.fillRect(x, y, 14, 12);
+            }
+        }
+        this.glassTexture = new THREE.CanvasTexture(glassCanvas);
+        this.glassTexture.wrapS = THREE.RepeatWrapping;
+        this.glassTexture.wrapT = THREE.RepeatWrapping;
     }
 
-    buildGroundAndRoads() {
-        // Base ground plane (wet dark pavement)
-        const groundGeo = new THREE.PlaneGeometry(this.citySize, this.citySize, 32, 32);
+    buildSkyDome() {
+        // Giant atmospheric sky dome
+        const skyGeo = new THREE.SphereGeometry(720, 32, 16);
+        const skyMat = new THREE.MeshBasicMaterial({
+            map: this.skyTexture,
+            side: THREE.BackSide
+        });
+        const skyMesh = new THREE.Mesh(skyGeo, skyMat);
+        this.scene.add(skyMesh);
+
+        // Cinematic Sun Disc at golden hour angle
+        const sunGeo = new THREE.SphereGeometry(24, 16, 16);
+        const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa44 });
+        const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+        sunMesh.position.set(280, 110, -520);
+        this.scene.add(sunMesh);
+
+        // Sun Corona Flare Ring
+        const flareGeo = new THREE.RingGeometry(25, 60, 32);
+        const flareMat = new THREE.MeshBasicMaterial({ color: 0xff7722, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
+        const flare = new THREE.Mesh(flareGeo, flareMat);
+        flare.position.copy(sunMesh.position);
+        flare.lookAt(0, 0, 0);
+        this.scene.add(flare);
+    }
+
+    buildGroundAndStreets() {
+        // Base terrain (wet asphalt foundation)
+        const groundGeo = new THREE.PlaneGeometry(this.citySize, this.citySize);
         const groundMat = new THREE.MeshStandardMaterial({
-            color: 0x05070e,
-            roughness: 0.25,
-            metalness: 0.85
+            color: 0x181a20,
+            roughness: 0.4,
+            metalness: 0.3
         });
         const ground = new THREE.Mesh(groundGeo, groundMat);
         ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         this.scene.add(ground);
 
-        // Road Grid
         const halfSize = this.citySize / 2;
         const step = this.blockSize + this.roadWidth;
 
-        // North-South and East-West Roads
+        // Roads Grid (North-South & East-West)
         for (let pos = -halfSize + step / 2; pos <= halfSize; pos += step) {
-            // N-S road
+            // N-S Road
             const roadGeoNS = new THREE.PlaneGeometry(this.roadWidth, this.citySize);
             const roadMatNS = new THREE.MeshStandardMaterial({
                 map: this.roadTexture,
-                roughness: 0.3,
-                metalness: 0.7
+                roughness: 0.35,
+                metalness: 0.4
             });
             const roadNS = new THREE.Mesh(roadGeoNS, roadMatNS);
             roadNS.rotation.x = -Math.PI / 2;
-            roadNS.position.set(pos, 0.02, 0);
+            roadNS.position.set(pos, 0.03, 0);
             roadNS.receiveShadow = true;
             this.scene.add(roadNS);
 
-            // E-W road
+            // E-W Road
             const roadGeoEW = new THREE.PlaneGeometry(this.citySize, this.roadWidth);
             const roadMatEW = new THREE.MeshStandardMaterial({
                 map: this.roadTexture,
-                roughness: 0.3,
-                metalness: 0.7
+                roughness: 0.35,
+                metalness: 0.4
             });
             const roadEW = new THREE.Mesh(roadGeoEW, roadMatEW);
             roadEW.rotation.x = -Math.PI / 2;
             roadEW.rotation.z = Math.PI / 2;
-            roadEW.position.set(0, 0.03, pos);
+            roadEW.position.set(0, 0.04, pos);
             roadEW.receiveShadow = true;
             this.scene.add(roadEW);
         }
+
+        // Raised 3D Concrete Sidewalks on every city block
+        const curbHeight = 0.22;
+        const curbMat = new THREE.MeshStandardMaterial({
+            map: this.sidewalkTexture,
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        for (let x = -halfSize + step; x < halfSize - step / 2; x += step) {
+            for (let z = -halfSize + step; z < halfSize - step / 2; z += step) {
+                if (Math.abs(x) < 25 && Math.abs(z) < 25) continue; // Start plaza
+
+                const curbGeo = new THREE.BoxGeometry(this.blockSize, curbHeight, this.blockSize);
+                const curbMesh = new THREE.Mesh(curbGeo, curbMat);
+                curbMesh.position.set(x, curbHeight / 2 + 0.04, z);
+                curbMesh.receiveShadow = true;
+                this.scene.add(curbMesh);
+            }
+        }
     }
 
-    createNeonBillboard(text, color, width, height) {
+    createStorefrontSign(text, color, width, height) {
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 128;
         const ctx = canvas.getContext('2d');
 
-        // Dark background
-        ctx.fillStyle = '#05070f';
+        ctx.fillStyle = '#0f141f';
         ctx.fillRect(0, 0, 512, 128);
 
-        // Neon border
         ctx.strokeStyle = color;
         ctx.lineWidth = 6;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 18;
         ctx.strokeRect(8, 8, 496, 112);
 
-        // Neon text
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 44px monospace';
+        ctx.fillStyle = color;
+        ctx.font = '900 48px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 24;
         ctx.fillText(text, 256, 64);
 
         const tex = new THREE.CanvasTexture(canvas);
         const geo = new THREE.PlaneGeometry(width, height);
-        const mat = new THREE.MeshBasicMaterial({
-            map: tex,
-            side: THREE.DoubleSide
-        });
-        const mesh = new THREE.Mesh(geo, mat);
-        return mesh;
+        const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+        return new THREE.Mesh(geo, mat);
     }
 
     buildSkyscrapers() {
         const halfSize = this.citySize / 2;
         const step = this.blockSize + this.roadWidth;
-        const billboardTexts = [
-            { text: "OMNICORP", color: "#00f0ff" },
-            { text: "CYBERDYNE", color: "#ff0055" },
-            { text: "NEON OVERRIDE", color: "#ffea00" },
-            { text: "K-NET 2099", color: "#7928ca" },
-            { text: "SYNTH-CORP", color: "#00ff66" },
-            { text: "NEO-TOKYO 2.0", color: "#ff5500" },
-            { text: "RETRO RUNNER", color: "#00e5ff" }
+        const storeBrands = [
+            { text: "LIBERTY ARMS", color: "#ff3333" },
+            { text: "TW@ INTERNET", color: "#00f0ff" },
+            { text: "CLUCKIN' BELL", color: "#ffaa00" },
+            { text: "69 EXCHANGE", color: "#00ff66" },
+            { text: "STAR JUNCTION", color: "#ff0077" },
+            { text: "OMNICORP TOWER", color: "#ffd700" }
         ];
 
         for (let x = -halfSize + step; x < halfSize - step / 2; x += step) {
             for (let z = -halfSize + step; z < halfSize - step / 2; z += step) {
-                // Is this the central plaza?
-                const isCenter = Math.abs(x) < 40 && Math.abs(z - (-200)) < 40;
+                const isCenter = Math.abs(x) < 40 && Math.abs(z - (-220)) < 40;
                 const isPlayerSpawn = Math.abs(x) < 30 && Math.abs(z) < 30;
+                if (isPlayerSpawn) continue;
 
-                if (isPlayerSpawn) {
-                    // Leave clear for starting plaza
-                    continue;
-                }
+                let bHeight, bWidth, bDepth, buildingMat;
+                const styleRoll = Math.random();
 
-                let height, bWidth, bDepth;
                 if (isCenter) {
-                    // OmniCorp Mega Spire
-                    height = 240;
-                    bWidth = 65;
-                    bDepth = 65;
+                    // Massive OmniCorp Citadel Spire (Algonquin Empire Spire)
+                    bHeight = 250;
+                    bWidth = 62;
+                    bDepth = 62;
+                    buildingMat = new THREE.MeshStandardMaterial({
+                        map: this.glassTexture,
+                        roughness: 0.25,
+                        metalness: 0.85
+                    });
+                } else if (styleRoll < 0.45) {
+                    // Liberty Brick Brownstone Tower
+                    bHeight = 45 + Math.random() * 55;
+                    bWidth = 46 + Math.random() * 12;
+                    bDepth = 46 + Math.random() * 12;
+                    buildingMat = new THREE.MeshStandardMaterial({
+                        map: this.brickTexture,
+                        roughness: 0.7,
+                        metalness: 0.15
+                    });
                 } else {
-                    height = 45 + Math.random() * 120;
-                    bWidth = 45 + Math.random() * 15;
-                    bDepth = 45 + Math.random() * 15;
+                    // Modern Glass High-Rise
+                    bHeight = 65 + Math.random() * 105;
+                    bWidth = 48 + Math.random() * 10;
+                    bDepth = 48 + Math.random() * 10;
+                    buildingMat = new THREE.MeshStandardMaterial({
+                        map: this.glassTexture,
+                        roughness: 0.25,
+                        metalness: 0.85
+                    });
                 }
 
-                // Skyscraper mesh
-                const boxGeo = new THREE.BoxGeometry(bWidth, height, bDepth);
-                const boxMat = new THREE.MeshStandardMaterial({
-                    color: 0x0a0e1c,
-                    map: this.windowTexture,
-                    roughness: 0.35,
-                    metalness: 0.8
-                });
-                const building = new THREE.Mesh(boxGeo, boxMat);
-                building.position.set(x, height / 2, z);
+                // Main Tower Mesh
+                const boxGeo = new THREE.BoxGeometry(bWidth, bHeight, bDepth);
+                const building = new THREE.Mesh(boxGeo, buildingMat);
+                building.position.set(x, bHeight / 2, z);
                 building.castShadow = true;
                 building.receiveShadow = true;
                 this.scene.add(building);
 
-                // Add rooftop spire / antenna
-                if (Math.random() > 0.4 || isCenter) {
-                    const spireHeight = 20 + Math.random() * 30;
-                    const spireGeo = new THREE.CylinderGeometry(0.4, 1.2, spireHeight, 6);
-                    const spireMat = new THREE.MeshBasicMaterial({ color: isCenter ? 0xff0055 : 0x00f0ff });
-                    const spire = new THREE.Mesh(spireGeo, spireMat);
-                    spire.position.set(x, height + spireHeight / 2, z);
-                    this.scene.add(spire);
+                // Add Classic GTA 4 Rooftop Clutter
+                this.buildRooftopClutter(x, bHeight, z, bWidth, bDepth, isCenter);
 
-                    // Beacon light
-                    const beaconGeo = new THREE.SphereGeometry(1.2, 8, 8);
-                    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
-                    const beacon = new THREE.Mesh(beaconGeo, beaconMat);
-                    beacon.position.set(x, height + spireHeight, z);
-                    this.scene.add(beacon);
-                }
+                // Ground Floor Storefront Signage
+                const brand = storeBrands[Math.floor(Math.random() * storeBrands.length)];
+                const sign = this.createStorefrontSign(isCenter ? "OMNICORP HQ" : brand.text, brand.color, bWidth * 0.7, 7.5);
+                sign.position.set(x, 6.5, z + bDepth / 2 + 0.4);
+                this.scene.add(sign);
 
-                // Add Holographic Neon Billboard to some buildings
-                if (Math.random() > 0.45 || isCenter) {
-                    const ad = billboardTexts[Math.floor(Math.random() * billboardTexts.length)];
-                    const board = this.createNeonBillboard(isCenter ? "OMNICORP HQ" : ad.text, isCenter ? "#ff0055" : ad.color, bWidth * 0.75, 14);
-                    // Mount on facade facing road
-                    board.position.set(x, height * 0.65, z + bDepth / 2 + 0.6);
-                    this.scene.add(board);
-                    this.billboards.push(board);
-                }
-
-                // Add AABB collider for physical collisions
+                // Physical Collider Box
                 this.colliders.push({
-                    min: new THREE.Vector3(x - bWidth / 2 - 1, 0, z - bDepth / 2 - 1),
-                    max: new THREE.Vector3(x + bWidth / 2 + 1, height, z + bDepth / 2 + 1)
+                    min: new THREE.Vector3(x - bWidth / 2 - 1.2, 0, z - bDepth / 2 - 1.2),
+                    max: new THREE.Vector3(x + bWidth / 2 + 1.2, bHeight, z + bDepth / 2 + 1.2)
                 });
             }
         }
     }
 
-    buildStreetLights() {
-        const halfSize = this.citySize / 2 - 30;
+    buildRooftopClutter(x, y, z, width, depth, isCenter) {
+        if (isCenter) {
+            // Massive radio broadcasting spire with aviation beacon
+            const spireGeo = new THREE.CylinderGeometry(0.5, 2.5, 45, 8);
+            const spireMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.9, roughness: 0.2 });
+            const spire = new THREE.Mesh(spireGeo, spireMat);
+            spire.position.set(x, y + 22.5, z);
+            this.scene.add(spire);
+
+            const beacon = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0033 }));
+            beacon.position.set(x, y + 45, z);
+            this.scene.add(beacon);
+            return;
+        }
+
+        // 1. Classic NYC / GTA 4 Wooden Water Tower on Rooftops
+        if (Math.random() > 0.4) {
+            const tankGroup = new THREE.Group();
+            const tankMat = new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: 0.9 });
+            const roofMat = new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.8 });
+            const stiltMat = new THREE.MeshStandardMaterial({ color: 0x212121, metalness: 0.8 });
+
+            // Wooden barrel
+            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.5, 7, 14), tankMat);
+            barrel.position.y = 8;
+            tankGroup.add(barrel);
+
+            // Conical roof
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(4.2, 3.2, 14), roofMat);
+            roof.position.y = 13;
+            tankGroup.add(roof);
+
+            // 4 Steel legs / stilts
+            for (let i = 0; i < 4; i++) {
+                const angle = (i * Math.PI) / 2 + Math.PI / 4;
+                const leg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 6, 0.35), stiltMat);
+                leg.position.set(Math.cos(angle) * 2.8, 3, Math.sin(angle) * 2.8);
+                tankGroup.add(leg);
+            }
+
+            tankGroup.position.set(x + (Math.random() - 0.5) * (width * 0.4), y, z + (Math.random() - 0.5) * (depth * 0.4));
+            this.scene.add(tankGroup);
+        }
+
+        // 2. HVAC Units & Elevator machinery penthouse
+        if (Math.random() > 0.3) {
+            const hvacGeo = new THREE.BoxGeometry(7, 4, 7);
+            const hvacMat = new THREE.MeshStandardMaterial({ color: 0x607d8b, metalness: 0.6, roughness: 0.4 });
+            const hvac = new THREE.Mesh(hvacGeo, hvacMat);
+            hvac.position.set(x, y + 2, z);
+            this.scene.add(hvac);
+        }
+    }
+
+    buildStreetFurniture() {
+        const halfSize = this.citySize / 2 - 40;
         const step = this.blockSize + this.roadWidth;
 
-        const poleGeo = new THREE.CylinderGeometry(0.3, 0.4, 10, 8);
-        const poleMat = new THREE.MeshStandardMaterial({ color: 0x1a2133, metalness: 0.9, roughness: 0.2 });
-
-        const headGeo = new THREE.BoxGeometry(2, 0.4, 0.8);
-        const headMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+        // Street Lamps casting warm incandescent light
+        const poleGeo = new THREE.CylinderGeometry(0.25, 0.35, 9.5, 8);
+        const poleMat = new THREE.MeshStandardMaterial({ color: 0x1f242d, metalness: 0.8, roughness: 0.3 });
+        const lampHeadGeo = new THREE.BoxGeometry(1.6, 0.35, 0.65);
+        const lampHeadMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
 
         for (let x = -halfSize; x <= halfSize; x += step) {
             for (let z = -halfSize; z <= halfSize; z += step / 2) {
-                if (Math.abs(x) > 380 || Math.abs(z) > 380) continue;
+                if (Math.abs(x) > 390 || Math.abs(z) > 390) continue;
 
                 const pole = new THREE.Mesh(poleGeo, poleMat);
-                pole.position.set(x - 13, 5, z);
+                pole.position.set(x - 14, 4.75, z);
                 this.scene.add(pole);
 
-                const head = new THREE.Mesh(headGeo, headMat);
-                head.position.set(x - 12.2, 9.8, z);
+                const head = new THREE.Mesh(lampHeadGeo, lampHeadMat);
+                head.position.set(x - 13.2, 9.4, z);
                 this.scene.add(head);
 
-                // Add point lights strategically to illuminate neon streets
-                if (Math.random() > 0.75) {
-                    const light = new THREE.PointLight(0x00f0ff, 1.2, 35);
-                    light.position.set(x - 12, 9, z);
-                    this.scene.add(light);
+                // Add real point lights for dramatic street lighting
+                if (Math.random() > 0.65) {
+                    const streetLight = new THREE.PointLight(0xffe082, 1.4, 42);
+                    streetLight.position.set(x - 13, 8.8, z);
+                    this.scene.add(streetLight);
                 }
             }
         }
     }
 
     buildPerimeterBarriers() {
-        // Holographic forcefield walls enclosing Cyber City
         const halfSize = this.citySize / 2;
-        const wallMat = new THREE.MeshBasicMaterial({
-            color: 0x00f0ff,
-            transparent: true,
-            opacity: 0.25,
-            wireframe: true
-        });
+        const barrierGeo = new THREE.BoxGeometry(this.citySize, 25, 8);
+        const barrierMat = new THREE.MeshStandardMaterial({ color: 0x1b202e, metalness: 0.8, roughness: 0.3 });
 
-        // North & South walls
-        const wallGeoNS = new THREE.PlaneGeometry(this.citySize, 80, 32, 8);
-        const wallN = new THREE.Mesh(wallGeoNS, wallMat);
-        wallN.position.set(0, 40, -halfSize);
+        // North & South
+        const wallN = new THREE.Mesh(barrierGeo, barrierMat);
+        wallN.position.set(0, 12.5, -halfSize);
         this.scene.add(wallN);
 
-        const wallS = new THREE.Mesh(wallGeoNS, wallMat);
-        wallS.position.set(0, 40, halfSize);
-        wallS.rotation.y = Math.PI;
+        const wallS = new THREE.Mesh(barrierGeo, barrierMat);
+        wallS.position.set(0, 12.5, halfSize);
         this.scene.add(wallS);
 
-        // East & West walls
-        const wallGeoEW = new THREE.PlaneGeometry(this.citySize, 80, 32, 8);
-        const wallE = new THREE.Mesh(wallGeoEW, wallMat);
-        wallE.position.set(halfSize, 40, 0);
-        wallE.rotation.y = -Math.PI / 2;
+        // East & West
+        const wallGeoEW = new THREE.BoxGeometry(8, 25, this.citySize);
+        const wallE = new THREE.Mesh(wallGeoEW, barrierMat);
+        wallE.position.set(halfSize, 12.5, 0);
         this.scene.add(wallE);
 
-        const wallW = new THREE.Mesh(wallGeoEW, wallMat);
-        wallW.position.set(-halfSize, 40, 0);
-        wallW.rotation.y = Math.PI / 2;
+        const wallW = new THREE.Mesh(wallGeoEW, barrierMat);
+        wallW.position.set(-halfSize, 12.5, 0);
         this.scene.add(wallW);
 
-        // Colliders for outer bounds
-        this.colliders.push({ min: new THREE.Vector3(-halfSize - 10, 0, -halfSize - 10), max: new THREE.Vector3(halfSize + 10, 100, -halfSize) });
-        this.colliders.push({ min: new THREE.Vector3(-halfSize - 10, 0, halfSize), max: new THREE.Vector3(halfSize + 10, 100, halfSize + 10) });
-        this.colliders.push({ min: new THREE.Vector3(-halfSize - 10, 0, -halfSize - 10), max: new THREE.Vector3(-halfSize, 100, halfSize + 10) });
-        this.colliders.push({ min: new THREE.Vector3(halfSize, 0, -halfSize - 10), max: new THREE.Vector3(halfSize + 10, 100, halfSize + 10) });
+        this.colliders.push({ min: new THREE.Vector3(-halfSize - 20, 0, -halfSize - 20), max: new THREE.Vector3(halfSize + 20, 100, -halfSize + 4) });
+        this.colliders.push({ min: new THREE.Vector3(-halfSize - 20, 0, halfSize - 4), max: new THREE.Vector3(halfSize + 20, 100, halfSize + 20) });
+        this.colliders.push({ min: new THREE.Vector3(-halfSize - 20, 0, -halfSize - 20), max: new THREE.Vector3(-halfSize + 4, 100, halfSize + 20) });
+        this.colliders.push({ min: new THREE.Vector3(halfSize - 4, 0, -halfSize - 20), max: new THREE.Vector3(halfSize + 20, 100, halfSize + 20) });
     }
 
     checkCollision(pos, radius = 1.0) {
@@ -361,15 +502,10 @@ class CityManager {
 
     resolveCollision(pos, oldPos, radius = 1.0) {
         if (!this.checkCollision(pos, radius)) return pos;
-        // Try sliding on X
         const testX = new THREE.Vector3(pos.x, pos.y, oldPos.z);
         if (!this.checkCollision(testX, radius)) return testX;
-
-        // Try sliding on Z
         const testZ = new THREE.Vector3(oldPos.x, pos.y, pos.z);
         if (!this.checkCollision(testZ, radius)) return testZ;
-
-        // Revert to old position if blocked
         return oldPos.clone();
     }
 }
