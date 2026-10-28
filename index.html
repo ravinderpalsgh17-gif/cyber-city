@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER CITY 2099 - 3D Open World</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Three.js Release 128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- 3D Canvas Container -->
+    <div id="game-container"></div>
+
+    <!-- Scanline & Hurt Visual FX -->
+    <div id="scanline-overlay"></div>
+    <div id="hurt-overlay"></div>
+
+    <!-- HUD Interface -->
+    <div id="hud">
+        <!-- Center Crosshair -->
+        <div id="crosshair">
+            <div id="crosshair-dot"></div>
+        </div>
+
+        <!-- Boss Health Bar -->
+        <div id="boss-hud" class="hidden">
+            <div id="boss-name">APEX TITAN-MECH</div>
+            <div id="boss-health-bar">
+                <div id="boss-health-fill"></div>
+            </div>
+            <div id="boss-health-text">2500 / 2500 HP</div>
+        </div>
+
+        <!-- Top Status Bar -->
+        <div class="hud-top">
+            <div id="mission-panel">
+                <div id="mission-badge">ACTIVE CAMPAIGN</div>
+                <div id="mission-title">1. The Awakening</div>
+                <div id="mission-objective">▶ Go to your weapon cache in the alleyway</div>
+                <div id="mission-timer" class="hidden">TIME: 85s</div>
+            </div>
+
+            <div id="top-right-panel">
+                <div id="wanted-stars">☆☆☆☆☆</div>
+                <div id="radio-panel">
+                    <span id="radio-status">RADIO: NEON SKYLINE</span>
+                    <span style="opacity: 0.6; font-size: 10px; margin-left: 6px;">[R: Next | M: Mute]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Dialogue Comms Box -->
+        <div id="dialogue-box" class="hidden">
+            <div id="dialogue-speaker">NYX // RESISTANCE HANDLER</div>
+            <div id="dialogue-text">Kaelen, wake up! OmniCorp thinks you're dead at the bottom of Sector 4. Grab your gear from the stash before their sweepers lock this block down!</div>
+        </div>
+
+        <!-- Vehicle Interaction Prompt -->
+        <div id="interaction-prompt" class="hidden">[E] ENTER CYBER CAR</div>
+
+        <!-- Speedometer & Nitro Bar (Vehicle Mode) -->
+        <div id="speedo-hud" class="hidden">
+            <div id="speed-display"><span id="speed-value">0</span> <span id="speed-unit">KM/H</span></div>
+            <div id="nitro-bar-container">
+                <div id="nitro-bar-fill"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar: Minimap & Weapons -->
+        <div class="hud-bottom">
+            <!-- Minimap + Player Status -->
+            <div id="minimap-wrapper">
+                <canvas id="minimap-canvas" width="180" height="180"></canvas>
+                <div id="status-bars">
+                    <div class="stat-bar">
+                        <div id="shield-bar-fill" class="stat-fill"></div>
+                        <span id="shield-text" class="stat-text">100 SHIELD</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div id="health-bar-fill" class="stat-fill"></div>
+                        <span id="health-text" class="stat-text">100 HP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Quick Hint -->
+            <div id="controls-hint">
+                [WASD] Move/Drive | [MOUSE] Aim/Shoot | [E/F] Car | [1-9, 0, -, =] 15 Weapons | [SHIFT] Sprint/Nitro | [SPACE] Jump/Drift
+            </div>
+
+            <!-- Weapon Arsenal Status & 15-Slot Selector -->
+            <div id="weapon-wrapper">
+                <div id="weapon-card">
+                    <div id="weapon-header">
+                        <span id="weapon-counter">[1 / 15]</span>
+                        <div id="weapon-name">1. Neon Striker</div>
+                    </div>
+                    <div id="weapon-ammo">AMMO: ∞</div>
+                    <div id="weapon-desc">Standard-issue high-precision cyber energy sidearm</div>
+                </div>
+
+                <!-- 15 Weapon Selection Slots -->
+                <div id="weapon-strip" class="hud-interactive">
+                    <div class="weapon-slot active" title="1. Neon Striker">1</div>
+                    <div class="weapon-slot" title="2. Pulse-9 SMG">2</div>
+                    <div class="weapon-slot" title="3. Viper Cyber-AR">3</div>
+                    <div class="weapon-slot" title="4. Scatter-Tech 12">4</div>
+                    <div class="weapon-slot" title="5. Specter Rail-Sniper">5</div>
+                    <div class="weapon-slot" title="6. Arc Caster">6</div>
+                    <div class="weapon-slot" title="7. Plasma Flamethrower">7</div>
+                    <div class="weapon-slot" title="8. Micro-Missile Pod">8</div>
+                    <div class="weapon-slot" title="9. Vortex Grenade Cannon">9</div>
+                    <div class="weapon-slot" title="10. Katana 'Zero'">10</div>
+                    <div class="weapon-slot" title="11. Thermal Beam Cannon">11</div>
+                    <div class="weapon-slot" title="12. EMP Disruptor">12</div>
+                    <div class="weapon-slot" title="13. Tachyon Minigun">13</div>
+                    <div class="weapon-slot" title="14. Singularity Rifle">14</div>
+                    <div class="weapon-slot" title="15. Cyber-Nuke Launcher">15</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Death Modal Screen -->
+    <div id="death-screen" class="modal-screen hidden">
+        <h1 class="modal-title red">FLATLINED</h1>
+        <p class="modal-desc">Your cybernetic vital signs collapsed. Sector 4 patrol retrieved your consciousness.</p>
+        <button id="respawn-btn" class="cyber-btn hud-interactive">RESPAWN AT SECTOR 4</button>
+    </div>
+
+    <!-- Victory Modal Screen -->
+    <div id="victory-screen" class="modal-screen hidden">
+        <h1 class="modal-title cyan">CYBER OVERRIDE COMPLETE</h1>
+        <p class="modal-desc">The OmniCorp Central Spire has fallen. The Titan-Mech was dismantled, and the liberation code is broadcast across all sectors. You now control Cyber City.</p>
+        <button onclick="document.getElementById('victory-screen').classList.add('hidden')" class="cyber-btn hud-interactive">CONTINUE FREE ROAM</button>
+    </div>
+
+    <!-- Game Logic Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/city.js"></script>
+    <script src="js/vehicle.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/weapons.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/missions.js"></script>
+    <script src="js/minimap.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
